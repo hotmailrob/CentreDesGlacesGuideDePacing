@@ -12,21 +12,18 @@ const INITIAL_SEGMENTS: Segment[] = [
 export default function App() {
   const [segments, setSegments] = useState<Segment[]>(INITIAL_SEGMENTS);
   const [results, setResults] = useState<SegmentResult[] | null>(null);
-  const [selectedRep, setSelectedRep] = useState<{
-    segmentIndex: number;
-    repIndex: number;
-  } | null>(null);
+  const [selectedSegmentIndex, setSelectedSegmentIndex] = useState<number | null>(null);
 
   function handleCalculate() {
     const r = calculateWorkout(segments);
     setResults(r);
-    setSelectedRep(r.length > 0 ? { segmentIndex: 0, repIndex: 0 } : null);
+    setSelectedSegmentIndex(r.length > 0 ? 0 : null);
   }
 
   // Determine which segment to highlight on the track
   const highlightedSegment =
-    selectedRep && results
-      ? results[selectedRep.segmentIndex]?.segment ?? null
+    selectedSegmentIndex !== null && results
+      ? results[selectedSegmentIndex]?.segment ?? null
       : null;
 
   return (
@@ -45,7 +42,7 @@ export default function App() {
         onSegmentsChange={(s) => {
           setSegments(s);
           setResults(null);
-          setSelectedRep(null);
+          setSelectedSegmentIndex(null);
         }}
         onCalculate={handleCalculate}
         results={results}
@@ -55,10 +52,8 @@ export default function App() {
       {results && (
         <SplitTable
           results={results}
-          selectedRep={selectedRep}
-          onSelectRep={(segIdx, repIdx) =>
-            setSelectedRep({ segmentIndex: segIdx, repIndex: repIdx })
-          }
+          selectedSegmentIndex={selectedSegmentIndex}
+          onSelectSegment={setSelectedSegmentIndex}
         />
       )}
     </div>
