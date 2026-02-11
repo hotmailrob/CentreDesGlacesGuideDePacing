@@ -93,7 +93,7 @@ export default function TrackSVG({ selectedSegment }: Props) {
               x={pt.x + dx * (TICK_LEN + 5)}
               y={pt.y + dy * (TICK_LEN + 5)}
               fill="#64748b"
-              fontSize={6}
+              fontSize={9}
               textAnchor="middle"
               dominantBaseline="middle"
             >

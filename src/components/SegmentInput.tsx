@@ -19,20 +19,9 @@ export default function SegmentInput({
 }: Props) {
   const paceMinutes = Math.floor(segment.paceSeconds / 60);
   const paceSeconds = Math.round(segment.paceSeconds % 60);
-  const paceStr = `${paceMinutes}:${paceSeconds.toString().padStart(2, "0")}`;
 
   function updateField(fields: Partial<Segment>) {
     onChange(index, { ...segment, ...fields });
-  }
-
-  function handlePaceChange(value: string) {
-    const parts = value.split(":");
-    if (parts.length !== 2) return;
-    const mins = parseInt(parts[0], 10);
-    const secs = parseInt(parts[1], 10);
-    if (isNaN(mins) || isNaN(secs)) return;
-    if (mins < 0 || secs < 0 || secs >= 60) return;
-    updateField({ paceSeconds: mins * 60 + secs });
   }
 
   return (
@@ -122,14 +111,54 @@ export default function SegmentInput({
           <label className="block text-xs text-slate-400 mb-1">
             Pace (min:ss/km)
           </label>
-          <input
-            type="text"
-            inputMode="numeric"
-            value={paceStr}
-            onChange={(e) => handlePaceChange(e.target.value)}
-            placeholder="3:15"
-            className="w-full bg-slate-700 rounded px-3 py-2 text-sm tabular-nums"
-          />
+          <div className="flex items-center gap-2">
+            {/* Minutes stepper */}
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() =>
+                  updateField({ paceSeconds: Math.max(0, segment.paceSeconds - 60) })
+                }
+                className="bg-slate-700 hover:bg-slate-600 rounded w-7 h-8 text-sm font-bold"
+              >
+                −
+              </button>
+              <span className="text-sm tabular-nums w-6 text-center">{paceMinutes}</span>
+              <button
+                type="button"
+                onClick={() => updateField({ paceSeconds: segment.paceSeconds + 60 })}
+                className="bg-slate-700 hover:bg-slate-600 rounded w-7 h-8 text-sm font-bold"
+              >
+                +
+              </button>
+            </div>
+
+            <span className="text-sm font-bold">:</span>
+
+            {/* Seconds stepper (±5s) */}
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                onClick={() => {
+                  const next = segment.paceSeconds - 5;
+                  if (next >= 0) updateField({ paceSeconds: next });
+                }}
+                className="bg-slate-700 hover:bg-slate-600 rounded w-7 h-8 text-sm font-bold"
+              >
+                −
+              </button>
+              <span className="text-sm tabular-nums w-6 text-center">
+                {paceSeconds.toString().padStart(2, "0")}
+              </span>
+              <button
+                type="button"
+                onClick={() => updateField({ paceSeconds: segment.paceSeconds + 5 })}
+                className="bg-slate-700 hover:bg-slate-600 rounded w-7 h-8 text-sm font-bold"
+              >
+                +
+              </button>
+            </div>
+          </div>
         </div>
 
         {/* Lane */}
